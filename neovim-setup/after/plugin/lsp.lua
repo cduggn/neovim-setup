@@ -1,29 +1,17 @@
 local lsp = require("lsp-zero")
+--local cmp = require('cmp')
+--local luasnip = require('luasnip')
 
 lsp.preset("recommended")
 
-require('mason').setup()
-require('mason-lspconfig').setup({
-  ensure_installed = {
-    'tsserver',
-    'rust_analyzer',
-    'golangci_lint_ls',
-    'gopls',
-    'java_language_server'
-  },
-  automatic_installation = true
-})
-
---lsp.ensure_installed({
---  'tsserver',
---  'rust_analyzer',
---  'golangci_lint_ls',
---  'gopls',
---  'java_language_server'
---})
-
---lsp.nvim_workspace()
-
+-- lsp servers need to be first installed on the system, otherwise they will not work
+local lspconfig = require('lspconfig')
+lspconfig.tsserver.setup {}
+lspconfig.gopls.setup {}
+lspconfig.rust_analyzer.setup {}
+lspconfig.golangci_lint_ls.setup {}
+lspconfig.tsserver.setup {}
+lspconfig.java_language_server.setup {}
 
 local cmp = require('cmp')
 local cmp_select = {behavior = cmp.SelectBehavior.Select}
@@ -34,9 +22,20 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
   ["<C-Space>"] = cmp.mapping.complete(),
 })
 
-cmp_mappings['<Tab>'] = nil
-cmp_mappings['<S-Tab>'] = nil
-
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body)
+        end,
+    },
+    mapping = cmp_mappings,
+    sources = cmp.config.sources({
+       { name = 'nvim_lsp' },
+        { name = 'luasnip' },  -- For LuaSnip users.
+        -- You can specify additional sources here.
+    }),
+    -- Add any other configuration options here.
+})
 
 lsp.set_preferences({
     suggest_lsp_servers = false,
@@ -65,7 +64,3 @@ lsp.on_attach(function(client, bufnr)
 end)
 
 lsp.setup()
-
-vim.diagnostic.config({
-    virtual_text = true
-})
