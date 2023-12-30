@@ -46,6 +46,18 @@ return require('packer').startup(function(use)
 			{'L3MON4D3/LuaSnip'},
 		}
 	}
-	use {'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim'}
+	use {
+		'williamboman/mason.nvim',
+		config = function()
+			require('mason').setup({
+				-- Mason settings
+				-- Example:
+				ui = {
+					border = 'rounded',
+				}
+			})
+		end
+	}
+	use { 'williamboman/mason-lspconfig.nvim'}
 
 end)
